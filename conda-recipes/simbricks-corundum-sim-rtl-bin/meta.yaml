@@ -20,21 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Shared variables consumed by every recipe in this repo via
-#   conda build -m conda-recipes/conda_build_config.yaml <recipe>
-#
-# NOTE: simbricks_version is the single source of truth for the conda package
-# versions built from this repo and the internal bin -> python `==` pin (the
-# simbricks-corundum-sim-rtl-bin recipe pins the simbricks-corundum-sim-rtl-py
-# package it is co-built with to this exact version). It MUST stay in sync with
-# the version in corundum_sim_rtl_py/pyproject.toml and corundum_sys_py/
-# pyproject.toml (those files drive the actual versions of the built python
-# wheels). External dependencies (e.g. simbricks-lib) are NOT tied to this
-# version; they carry their own `>=` bounds since they release independently.
+package:
+  name: simbricks-corundum-sim-rtl-bin
+  version: {{ simbricks_version }}
 
-simbricks_version:
-  - "0.4.2"
-homepage:
-  - "https://www.simbricks.io/"
-github_org:
-  - "https://github.com/simbricks/simbricks"
+source:
+  path: ../../
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+    - verilator
+
+  host:
+    - simbricks-lib >=0.4.2
+
+  run:
+    # Co-built simulation python package from this repo, pinned to the same
+    # version; it transitively pulls in the system python package.
+    - simbricks-corundum-sim-rtl-py =={{ simbricks_version }}
+
+about:
+  home: {{ homepage }}
+  license: MIT
+  license_family: MIT
+  license_file: ../../LICENSE
+  summary: SimBricks Verilator (RTL) model of the Corundum NIC.
+  dev_url: {{ github_org }}
