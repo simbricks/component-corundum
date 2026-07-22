@@ -36,10 +36,6 @@ PREFIX            ?= $(CURDIR)/out
 SIMBRICKS_INC_DIR ?= $(PREFIX)/include
 SIMBRICKS_LIB_DIR ?= $(PREFIX)/lib/simbricks
 
-# Root of the simbricks source checkout; only used by the dev-only driver target
-# to locate the built guest kernel tree. TODO: FIXME
-SIMBRICKS_BASE    ?= /simbricks
-
 # Python packages (each has its own pyproject.toml).
 CORUNDUM_PY_SIM   := corundum_sim_rtl_py
 CORUNDUM_PY_SYS   := corundum_sys_py
@@ -66,7 +62,12 @@ corundum_simbricks_adapter_src := $(adapter_main).cpp
 corundum_simbricks_adapter_bin := $(adapter_main)
 
 mqnic_dir := $(dir_corundum)/modules/mqnic
-kernel_dir := $(wildcard $(SIMBRICKS_BASE)/images/kernel/linux-*/) # TODO: FIXME
+
+# Kernel build tree the out-of-tree mqnic module compiles against. Defaults to
+# the running kernel's headers, for use when `make driver` runs INSIDE the target
+# image.
+KDIR ?= /lib/modules/$(shell uname -r)/build
+KVER ?= $(shell uname -r)
 
 # simbricks static libs the adapter links against, resolved the standard way
 # with -L/-l from $(SIMBRICKS_LIB_DIR) (matches the flat lib*.a layout the
@@ -118,12 +119,16 @@ adapter: corundum-build
 corundum-install: corundum-build
 	install -Dm755 $(corundum_simbricks_adapter_bin) $(PREFIX)/bin/simb_corundum
 
-# Dev-only: build the mqnic kernel driver + utils. Needs the SimBricks guest
-# kernel build tree ($(SIMBRICKS_BASE)/images/kernel/linux-*), so it is not part
-# of the conda package. TODO: FIXME
+# Build the out-of-tree mqnic kernel module (+ userspace utils) against $(KDIR).
+# Meant to run inside the target image during image build.
 driver:
-	$(MAKE) -C $(kernel_dir) M=$(abspath $(mqnic_dir)) modules
+	$(MAKE) -C $(KDIR) M=$(abspath $(mqnic_dir)) modules
 	$(MAKE) -C $(dir_corundum)/utils
+
+# Install the built module into the kernel's module tree and refresh depmod.
+driver-install: driver
+	install -Dm644 $(mqnic_dir)/mqnic.ko /lib/modules/$(KVER)/extra/mqnic.ko
+	depmod -a $(KVER)
 
 ## --- Python packages (corundum_sim_rtl_py/, corundum_sys_py/) ---------------
 
@@ -159,6 +164,6 @@ clean:
 	rm -rf $(corundum_simbricks_adapter_bin) $(verilator_dir_corundum) ready out
 	rm -rf $(CORUNDUM_PY_SIM)/dist $(CORUNDUM_PY_SYS)/dist
 
-.PHONY: all corundum-build adapter corundum-install driver corundum-python-develop \
-        corundum-sys-py-conda corundum-sim-rtl-py-conda corundum-sim-rtl-bin-conda \
-        conda-packages clean
+.PHONY: all corundum-build adapter corundum-install driver driver-install \
+		corundum-python-develop corundum-sys-py-conda corundum-sim-rtl-py-conda \
+		corundum-sim-rtl-bin-conda conda-packages clean
