@@ -34,7 +34,7 @@ PREFIX            ?= $(CURDIR)/out
 # headers ($(PREFIX)/include) and its flat lib*.a archives ($(PREFIX)/lib/simbricks).
 # Override for a local dev build against a simbricks tree installed elsewhere.
 SIMBRICKS_INC_DIR ?= $(PREFIX)/include
-SIMBRICKS_LIB_DIR ?= $(PREFIX)/lib/simbricks
+SIMBRICKS_LIB_DIR ?= $(PREFIX)/lib
 
 # Python packages (each has its own pyproject.toml).
 CORUNDUM_PY_SIM   := corundum_sim_rtl_py
