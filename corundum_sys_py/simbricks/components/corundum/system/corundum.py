@@ -22,14 +22,10 @@
 
 from __future__ import annotations
 
-import typing as tp
 
 from simbricks.orchestration.system import nic
 from simbricks.orchestration.system import base as sys_base
 from simbricks.orchestration.system.host import base as sys_host
-from simbricks.orchestration.instantiation import base as inst_base
-
-# System Configuration Integration
 
 
 class CorundumNIC(nic.SimplePCIeNIC):
@@ -37,21 +33,7 @@ class CorundumNIC(nic.SimplePCIeNIC):
         super().__init__(s)
 
 
-# TODO: FIX PATHS
 class CorundumLinuxHost(sys_host.LinuxHost):
     def __init__(self, sys) -> None:
         super().__init__(sys)
-        self.drivers.append("/tmp/guest/mqnic.ko")
-
-    def config_files(self, inst: inst_base.Instantiation) -> dict[str, tp.IO]:
-        m = {
-            "mqnic.ko": open(
-                "/corundum_src/corundum/modules/mqnic/mqnic.ko",
-                "rb",
-            ),
-            "mqnic-dump": open(
-                "/corundum_src/corundum/utils/mqnic-dump",
-                "rb",
-            ),
-        }
-        return {**m, **super().config_files(inst=inst)}
+        self.drivers.append("mqnic")
