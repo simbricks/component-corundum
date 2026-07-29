@@ -24,7 +24,8 @@ from __future__ import annotations
 
 import typing_extensions as tpe
 from simbricks.utils import base as utils_base
-from simbricks.orchestration.system import base as sys_base
+from simbricks.orchestration.system import pcie as sys_pcie
+from simbricks.orchestration.system import eth as sys_eth
 from simbricks.orchestration.simulation import pcidev
 from simbricks.orchestration.simulation import base as sim_base
 from simbricks.orchestration.instantiation import base as inst_base
@@ -52,7 +53,7 @@ class CorundumVerilatorNICSim(pcidev.NICSim):
         channels = self.get_channels()
 
         pci_channels = sim_base.Simulator.filter_channels_by_sys_type(
-            channels, sys_base.PCIeChannel
+            channels, sys_pcie.PCIeChannel
         )
         pci_latency, pci_sync_period, pci_run_sync = (
             sim_base.Simulator.get_unique_latency_period_sync(pci_channels)
@@ -67,7 +68,7 @@ class CorundumVerilatorNICSim(pcidev.NICSim):
         )
 
         eth_channels = sim_base.Simulator.filter_channels_by_sys_type(
-            channels, sys_base.EthChannel
+            channels, sys_eth.EthChannel
         )
         eth_latency, eth_sync_period, eth_run_sync = (
             sim_base.Simulator.get_unique_latency_period_sync(eth_channels)
