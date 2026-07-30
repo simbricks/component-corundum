@@ -157,11 +157,11 @@ conda-packages: corundum-sim-rtl-py-conda corundum-sys-py-conda corundum-sim-rtl
 
 pypi-build:
 	poetry build -C $(CORUNDUM_PY_SYS)
-    poetry build -C $(CORUNDUM_PY_SIM)
+	poetry build -C $(CORUNDUM_PY_SIM)
 
 pypi-publish: pypi-build
 	poetry publish -C $(CORUNDUM_PY_SYS)
-    poetry publish -C $(CORUNDUM_PY_SIM)
+	poetry publish -C $(CORUNDUM_PY_SIM)
 
 ## --- Default target ----------------------------------------------------------
 
