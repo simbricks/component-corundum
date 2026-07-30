@@ -39,7 +39,7 @@ requirements:
     - verilator
 
   host:
-    - simbricks-lib >=0.4.2
+    - simbricks-lib >=0.5.0
 
   run:
     # Co-built simulation python package from this repo, pinned to the same
