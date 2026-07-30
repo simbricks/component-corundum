@@ -152,6 +152,17 @@ corundum-sim-rtl-bin-conda:
 # sequentially (no -j) so each build finds the previously-built local packages.
 conda-packages: corundum-sim-rtl-py-conda corundum-sys-py-conda corundum-sim-rtl-bin-conda
 
+
+## --- PyPI packages ---------------------------------------------------------
+
+pypi-build:
+	poetry build -C $(CORUNDUM_PY_SYS)
+    poetry build -C $(CORUNDUM_PY_SIM)
+
+pypi-publish: pypi-build
+	poetry publish -C $(CORUNDUM_PY_SYS)
+    poetry publish -C $(CORUNDUM_PY_SIM)
+
 ## --- Default target ----------------------------------------------------------
 
 # Default: build all conda packages.
