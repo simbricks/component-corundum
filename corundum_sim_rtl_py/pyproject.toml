@@ -42,3 +42,4 @@ packages = [
 [tool.poetry.dependencies]
 simbricks-orchestration = ">=0.5.0"
 simbricks-utils = ">=0.5.0"
+simbricks-corundum-sys-py = ">=0.5.0"
