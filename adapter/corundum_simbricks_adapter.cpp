@@ -789,17 +789,17 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  if (pcieAdapterParams->sync_interval_set)
-    pcieParams.sync_interval = pcieAdapterParams->sync_interval * 1000ULL;
-  if (netAdapterParams->sync_interval_set)
-    netParams.sync_interval = netAdapterParams->sync_interval * 1000ULL;
-  if (pcieAdapterParams->link_latency_set)
-    pcieParams.link_latency = pcieAdapterParams->link_latency * 1000ULL;
-  if (netAdapterParams->link_latency_set)
-    netParams.link_latency = netAdapterParams->link_latency * 1000ULL;
-
   SimbricksNetIfDefaultParams(&netParams);
   SimbricksPcieIfDefaultParams(&pcieParams);
+
+  if (pcieAdapterParams->sync_interval_set)
+    pcieParams.sync_interval = pcieAdapterParams->sync_interval;
+  if (netAdapterParams->sync_interval_set)
+    netParams.sync_interval = netAdapterParams->sync_interval;
+  if (pcieAdapterParams->link_latency_set)
+    pcieParams.link_latency = pcieAdapterParams->link_latency;
+  if (netAdapterParams->link_latency_set)
+    netParams.link_latency = netAdapterParams->link_latency;
 
   pcieParams.sock_path = pcieAdapterParams->socket_path;
   netParams.sock_path = netAdapterParams->socket_path;
